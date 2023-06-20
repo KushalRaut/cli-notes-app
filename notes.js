@@ -14,7 +14,7 @@ const addNotes = (title, body) => {
 
   if (!duplicateNotes) {
     notes.push({
-      uid: uid(16),
+      uid: uid(4),
       title: title,
       body: body,
     });
@@ -24,21 +24,21 @@ const addNotes = (title, body) => {
       chalk.green.bold("Note added with ", "Title: ", title, "Body: ", body)
     );
   } else {
-    console.log("Title is already taken");
+    console.log(chalk.red.bold("Could not create note, please try again"));
   }
 };
 
-const removeNotes = (title) => {
+const removeNotes = (noteId) => {
   const notes = loadNotes();
 
   const updatedNotes = notes.filter((note) => {
-    return note.title != title;
+    return note.uid != noteId;
   });
   if (updatedNotes.length != notes.length) {
     saveNotes(updatedNotes);
     console.log("Note deleted successfully");
   } else {
-    console.log("There is no such title in Notes file");
+    console.log("Operation could not be done");
   }
 };
 
@@ -75,10 +75,29 @@ const readNotes = (title) => {
   }
 };
 
+const updateNotes = (id, title, body) => {
+  const notes = loadNotes();
+  const note = notes.find((note) => note.uid == id);
+  if (!note) {
+    console.log(chalk.red.inverse("No note found"));
+  }
+  const updatedNote = notes.map((note) => {
+    if (note.uid == id) {
+      note.title = title;
+      note.body = body;
+    }
+    return note;
+  });
+  saveNotes(updatedNote);
+  console.log(chalk.green.inverse("Note updated successfully"));
+};
+
 module.exports = {
   getNotes: getNotes,
   addNotes: addNotes,
   removeNotes: removeNotes,
   listNotes: listNotes,
   readNotes: readNotes,
+  loadNotes: loadNotes,
+  updateNotes: updateNotes,
 };
